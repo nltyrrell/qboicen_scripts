@@ -113,6 +113,7 @@ fi
 
 if $merge_time; then
 	merge_file="${out_dir}/merge_file.nc"
+	rm "${out_dir}/merge_file.nc"
 	echo "Merge files: ${in_file}"
 	echo "into merge file ${merge_file}"
 	$CDO mergetime ${in_file} ${merge_file}
@@ -157,6 +158,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if $merge_time; then
 	merge_file="${out_dir}/merge_file.nc"
+	rm "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -198,6 +200,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
+	rm "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -253,13 +256,14 @@ if [[ `ls -1 ${ineof_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 fi
 if  $merge_time ; then
 	merge_file="${out_dir}/merge_file.nc"
+	rm "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
-#--------------------- Compute AO indices ---------------------#
+#--------------------- Compute NAO indices ---------------------#
 # Notes:
-#	- To get the AO indices, we project the monthly and daily height anomalies at 1000 hPa [20-90N, 0-360] onto the leading monthly EOF mode
+#	- To get the NAO indices, we project the monthly and daily slp [20-70N, X-XX] onto the leading monthly EOF mode
 #	- Both (monthly and daily) indices are standardised by the MONTHLY std
 #	- **The lenght on the indices depends on the lenght of the z1000 anomalies used (in here periods longer than 1979-2000 can be input)
 
@@ -327,6 +331,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
+	rm "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -372,6 +377,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
+	rm "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -416,6 +422,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if  $merge_time ; then
 	merge_file="${out_dir}/merge_file.nc"
+	rm "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -457,6 +464,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
+	rm "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi

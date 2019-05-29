@@ -113,7 +113,7 @@ fi
 
 if $merge_time; then
 	merge_file="${out_dir}/merge_file.nc"
-	rm "${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
 	echo "Merge files: ${in_file}"
 	echo "into merge file ${merge_file}"
 	$CDO mergetime ${in_file} ${merge_file}
@@ -124,7 +124,7 @@ $CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
 $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
-rm ${out_tempfile}
+rm -f ${out_tempfile}
 echo " "
 echo "================================"
 echo " "
@@ -158,7 +158,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if $merge_time; then
 	merge_file="${out_dir}/merge_file.nc"
-	rm "${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -200,7 +200,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
-	rm "${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -256,7 +256,7 @@ if [[ `ls -1 ${ineof_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 fi
 if  $merge_time ; then
 	merge_file="${out_dir}/merge_file.nc"
-	rm "${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -285,7 +285,7 @@ $CDO mul ${ineof_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_mon.nc
 $CDO -chname,${var},nao -fldmean ${out_tempfile}_proj1_mon.nc ${out_tempfile}_nao_nostd_mon.nc
 $CDO ymonstd ${out_tempfile}_nao_nostd_mon.nc ${out_tempfile}_nao_ymonstd_mon.nc # to be used for daily index too
 $CDO div ${out_tempfile}_nao_nostd_mon.nc ${out_tempfile}_nao_ymonstd_mon.nc ${out_file}
-rm ${out_tempfile}_* # remove some files after having a quick look at them
+rm -f ${out_tempfile}_* # remove some files after having a quick look at them
 
 
 $nc2csv ${out_file}
@@ -331,7 +331,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
-	rm "${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -340,7 +340,7 @@ $CDO -b 64 enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
 $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
-rm ${out_tempfile}
+rm -f ${out_tempfile}
 echo " "
 echo "================================"
 echo " "
@@ -377,7 +377,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
-	rm "${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -387,7 +387,7 @@ $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertm
 #$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${in_file} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
-rm ${out_tempfile}
+rm -f ${out_tempfile}
 echo " "
 echo "================================"
 echo " "
@@ -422,7 +422,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if  $merge_time ; then
 	merge_file="${out_dir}/merge_file.nc"
-	rm "${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
@@ -464,7 +464,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
-	rm "${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi

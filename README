@@ -1,0 +1,22 @@
+
+Use:
+run_all_exp1.sh or run_all_exp2.sh
+
+to run scripts for all models
+
+to add indices, use the script
+cdo_master.sh
+
+Nicholas Tyrrell 9/2018
+
+OLD ROUTINE
+To generate output from the QBOi models for use in a jupyter-notebook 
+running tigramite:
+1) Run each cdo_[model].sh script.
+This will generate csv files for each actor timeseries.
+2) Run the script run_combine_actors.sh
+This will combine the actor timeseries into one csv file,
+which can be stored in a dropbox folder and read by a notebook
+running on co-lab
+
+

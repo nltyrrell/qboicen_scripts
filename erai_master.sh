@@ -10,8 +10,9 @@ set -e
 # nicholas tyrrell 2018
 # 
 # Use nc2csv.py to convert nc files to csv files
-nc2csv=/gws/nopw/j04/gotham/cen_qboi/scripts/nc2csv.py
-
+nc2csv=/home/tyrrell/research/qbo/qboi/qboicen_scripts/nc2csv.py3
+# Use own version of cdo, v 1.9.6
+CDO=/home/tyrrell/anaconda3/bin/cdo
 
 #============ Read in arguments from command line ===============
 
@@ -56,6 +57,9 @@ while [ $# -gt 0 ]; do
 		--merge_time=*)
 		  merge_time="${1#*=}"
 		  ;;
+		--qbo_plev=*)
+		  qbo_plev="${1#*=}"
+		  ;;
 		*)
 	esac
 	shift
@@ -66,7 +70,7 @@ echo "Getting data from: ${group}"
 #========================================
 
 #========== DONT CHANGE THESE ============
-out_dir="/gws/nopw/j04/gotham/cen_qboi/${exp}/${group}${model}"
+out_dir="/home/tyrrell/research/qbo/qboi/cen_qboi/erai/"
 mkdir -p ${out_dir} 	# creates output dir, -p ignores error if dir already exists
 
 echo "Model directory: ${model_dir}"
@@ -82,7 +86,7 @@ echo " "
 actor="QBO"
 
 var="ua" 		# Variable name for the actor
-plev="7${punits}"	# pressure level with unit adjustment
+plev="${qbo_plev}${punits}"	# pressure level with unit adjustment
 lon_min="0"		# Minimum longitude
 lon_max="0"		# Maximum longitude
 lat_min="-5.0"		# Mininum latitude
@@ -107,14 +111,16 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	exit 1
 fi
 
-if "$merge_time" ; then
+if $merge_time; then
 	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
+	echo "Merge files: ${in_file}"
+	echo "into merge file ${merge_file}"
+	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
-cdo enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
-cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
+$CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
 rm ${out_tempfile}
@@ -149,13 +155,13 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	echo "${in_file}"
 	exit 1
 fi
-if "$merge_time" ; then
+if $merge_time; then
 	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
+	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
-cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
 
 $nc2csv ${out_file}
 rm -f ${merge_file}
@@ -190,13 +196,13 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	echo "${in_file}"
 	exit 1
 fi
-if "$merge_time" ; then
+if $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
+	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
-cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
 
 
 $nc2csv ${out_file}
@@ -208,16 +214,15 @@ echo " "
 
 #=========================================
 
-# ----====> AO <====---- #
+# ----====> NAO <====---- #
 
-actor="AO"
+actor="NAO"
 
-var="zg" 		# Variable name for the actor
-plev="1000${punits}"	# pressure level with unit adjustment
-lon_min="0"		# Minimum longitude
-lon_max="360"		# Maximum longitude
+var="psl" 		# Variable name for the actor
+lon_min="270"		# Minimum longitude
+lon_max="40"		# Maximum longitude
 lat_min="20"		# Mininum latitude
-lat_max="90"		# Maximum latitude
+lat_max="70"		# Maximum latitude
 
 if "$make_actor_dir" ; then
 	actor_dir="${model_dir}/${var}/${real}"
@@ -226,7 +231,8 @@ in_filename="${var}_${model_filename}"
 in_file="${actor_dir}/${in_filename}"
 
 out_filename="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
-ineof_filename="eof1_mon_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
+ineof_filename="nao_eof1_mon_${group}${model}_QBOi${exp}_${real}_mon.nc"
+# Note: monthly NAO pattern used for mon and day NAO
 out_tempfile="${out_dir}/tempfile"
 out_file="${out_dir}/${out_filename}"
 ineof_file="${out_dir}/${ineof_filename}"
@@ -245,9 +251,9 @@ if [[ `ls -1 ${ineof_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 	echo "MUST RUN run_ao_pattern.sh FIRST"
 	exit 1
 fi
-if [[ "$merge_time" ]]; then
+if  $merge_time ; then
 	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
+	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
@@ -258,17 +264,23 @@ fi
 #	- **The lenght on the indices depends on the lenght of the z1000 anomalies used (in here periods longer than 1979-2000 can be input)
 
 #select lat, lon, plev
-cdo -r sellevel,${plev} ${in_file} ${out_tempfile}_1000.nc
-ncea -d lat,${lat_min}.0,${lat_max}.0 -d lon,${lon_min}.0,${lon_max}.0 ${out_tempfile}_1000.nc ${out_tempfile}_NH1000.nc
+#$CDO -r sellevel,${plev} ${in_file} ${out_tempfile}_1000.nc
+ncea -O -d lat,${lat_min}.0,${lat_max}.0 -d lon,${lon_min}.0,${lon_max}.0 ${in_file} ${out_tempfile}_NAtl.nc
+if [[ $($CDO sinfo ${out_tempfile}_NAtl.nc 2> /dev/null | grep generic) ]]
+then
+	ncks -O -x -v date ${out_tempfile}_NAtl.nc ${out_tempfile}_NAtl.nc
+echo "Remove date variable"
+fi
+
 # calculate anomalies, remove seasonal cycle
-cdo ymonsub ${out_tempfile}_NH1000.nc -ymonavg ${out_tempfile}_NH1000.nc ${out_tempfile}_anom.nc
+$CDO ymonsub ${out_tempfile}_NAtl.nc -ymonavg ${out_tempfile}_NAtl.nc ${out_tempfile}_anom.nc
 
 
 # --- Monthly:
-cdo mul ${ineof_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_mon.nc
-cdo -chname,${var},ao -fldmean ${out_tempfile}_proj1_mon.nc ${out_tempfile}_ao_nostd_mon.nc
-cdo ymonstd ${out_tempfile}_ao_nostd_mon.nc ${out_tempfile}_ao_ymonstd_mon.nc # to be used for daily index too
-cdo div ${out_tempfile}_ao_nostd_mon.nc ${out_tempfile}_ao_ymonstd_mon.nc ${out_file}
+$CDO mul ${ineof_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_mon.nc
+$CDO -chname,${var},nao -fldmean ${out_tempfile}_proj1_mon.nc ${out_tempfile}_nao_nostd_mon.nc
+$CDO ymonstd ${out_tempfile}_nao_nostd_mon.nc ${out_tempfile}_nao_ymonstd_mon.nc # to be used for daily index too
+$CDO div ${out_tempfile}_nao_nostd_mon.nc ${out_tempfile}_nao_ymonstd_mon.nc ${out_file}
 rm ${out_tempfile}_* # remove some files after having a quick look at them
 
 
@@ -313,14 +325,14 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	echo "${in_file}"
 	exit 1
 fi
-if "$merge_time" ; then
+if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
+	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
-cdo -b 64 enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
-cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
+$CDO -b 64 enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
 rm ${out_tempfile}
@@ -358,15 +370,15 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	echo "${in_file}"
 	exit 1
 fi
-if "$merge_time" ; then
+if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
+	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
-cdo enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
-cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${out_tempfile} ${out_file}
-#cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${in_file} ${out_file}
+$CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${out_tempfile} ${out_file}
+#$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${in_file} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
 rm ${out_tempfile}
@@ -402,13 +414,13 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	echo "${in_file}"
 	exit 1
 fi
-if "$merge_time" ; then
+if  $merge_time ; then
 	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
+	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
-cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
 echo " "
@@ -443,13 +455,13 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	echo "${in_file}"
 	exit 1
 fi
-if "$merge_time" ; then
+if  $merge_time  ; then
 	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
+	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
 
-cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
 echo " "

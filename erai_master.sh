@@ -18,19 +18,19 @@ CDO=/lustre/tmp/tyrrell/miniconda3/bin/cdo
 model="erai"
 tmean="day"
 punits=""
-lat_size="180"
+lat_size="181"
 qbo_plev="30"
 model_dir=""
 model_filename=""
 out_dir="/ibrix/arch/aledata/tyrrell/erai/cen_data/"
 
 # Define variable paths and names
-era_dir="/ibrix/arch/aledata/tyrrell/erai"
-uz_in_file="${era_dir}/erai_uz_1979-2018_${tmean}.nc"
-psl_in_file="${era_dir}/erai_psl_1979-2018_${tmean}.nc"
-t2m_in_file="${era_dir}/erai_t2m_1979-2018_${tmean}.nc"
-fz_in_file="${era_dir}/erai_vt_1979-2018_${tmean}.nc"
-gz_in_file="${era_dir}/erai_gz_1979-2018_${tmean}.nc"
+era_dir="/ibrix/arch/aledata/tyrrell/erai/cen_data"
+uz_in_file="${era_dir}/erai_uz_1979-2014_6l_${tmean}.nc"
+psl_in_file="${era_dir}/erai_psl_1979-2014_${tmean}.nc"
+t2m_in_file="${era_dir}/erai_t2m_1979-2014_NH_${tmean}.nc"
+vt_in_file="${era_dir}/erai_vt_1979-2014_p100_${tmean}.nc"
+gz_in_file="${era_dir}/erai_gz_1979-2014_NH_${tmean}.nc"
 
 echo "Getting data from: ${group}"
 
@@ -261,6 +261,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	exit 1
 fi
 
+lat_size="71"
 $CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
 $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${out_tempfile} ${out_file}
 #$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${in_file} ${out_file}

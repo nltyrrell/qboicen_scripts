@@ -1,4 +1,4 @@
-#!/home/tyrrell/anaconda3/bin/pytho/home/tyrrell/anaconda3/bin/python
+#!/lustre/tmp/tyrrell/miniconda3/bin/python
 
 """
 Convert netcdf timeseries to csv files so they can be 

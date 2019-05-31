@@ -290,7 +290,7 @@ if [[ ${tmean} == "mon" ]]
 then
 	echo "Monthly tmean NOA calulation"
 	# --- Monthly:
-	$CDO div ${out_tempfile}_nao_nostd_mon.nc ${ineofstd_file} ${out_file}
+	$CDO -O div ${out_tempfile}_nao_nostd_mon.nc ${ineofstd_file} ${out_file}
 	rm -f ${out_tempfile}_* # remove some files after having a quick look at them
 
 elif [[ ${tmean} == "day" ]]
@@ -310,7 +310,7 @@ then
 		let MON=MON+1
 	done
 
-	cdo mergetime ${out_tempfile}nao_m*.nc ${out_file}
+	cdo -O mergetime ${out_tempfile}nao_m*.nc ${out_file}
 
 	rm ${out_tempfile}* # remove some files after having a quick look at t    hem
 

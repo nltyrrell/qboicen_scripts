@@ -315,7 +315,6 @@ then
 	rm ${out_tempfile}* # remove some files after having a quick look at t    hem
 
 else 
-then
 	echo "no NAO calculation"
 fi
 

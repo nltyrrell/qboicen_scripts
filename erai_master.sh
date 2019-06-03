@@ -32,7 +32,7 @@ t2m_in_file="${era_dir}/erai_t2m_1979-2014_NH_${tmean}.nc"
 vt_in_file="${era_dir}/erai_vt_1979-2014_p100_${tmean}.nc"
 gz_in_file="${era_dir}/erai_gz_1979-2014_NH_${tmean}.nc"
 
-echo "Getting data from: ${group}"
+echo "Getting data from: ${model}"
 
 #========================================
 
@@ -48,7 +48,7 @@ echo " "
 
 actor="QBO"
 
-var="uz" 		# Variable name for the actor
+var="u" 		# Variable name for the actor
 plev="${qbo_plev}${punits}"	# pressure level with unit adjustment
 lon_min="0"		# Minimum longitude
 lon_max="0"		# Maximum longitude
@@ -145,6 +145,7 @@ echo " "
 
 actor="NAO"
 
+evar="msl" 		# Variable name for the actor
 var="psl" 		# Variable name for the actor
 lon_min="270"		# Minimum longitude
 lon_max="40"		# Maximum longitude
@@ -153,9 +154,9 @@ lat_max="70"		# Maximum latitude
 
 in_file="${psl_in_file}"
 
-out_filename="${actor}_${group}_${tmean}.nc"
-ineof_filename="nao_eof1_mon_${group}_mon.nc"
-ineofstd_filename="nao_eof1_mon_${group}_mon_ymonstd.nc"
+out_filename="${actor}_${model}_${tmean}.nc"
+ineof_filename="nao_eof1_mon_${model}_mon.nc"
+ineofstd_filename="nao_eof1_mon_${model}_mon_ymonstd.nc"
 # Note: monthly NAO pattern used for mon and day NAO
 out_tempfile="${out_dir}/tempfile"
 out_file="${out_dir}/${out_filename}"
@@ -185,7 +186,7 @@ fi
 #	- **The length on the indices depends on the lenght of the z1000 anomalies used (in here periods longer than 1979-2000 can be input)
 
 #select lat, lon, plev
-ncea -O -d lat,${lat_min}.0,${lat_max}.0 -d lon,${lon_min}.0,${lon_max}.0 ${in_file} ${out_tempfile}_NAtl.nc
+ncea -O -d latitude,${lat_min}.0,${lat_max}.0 -d longitude,${lon_min}.0,${lon_max}.0 ${in_file} ${out_tempfile}_NAtl.nc
 if [[ $($CDO sinfo ${out_tempfile}_NAtl.nc 2> /dev/null | grep generic) ]]
 then
 	ncks -O -x -v date ${out_tempfile}_NAtl.nc ${out_tempfile}_NAtl.nc
@@ -196,7 +197,7 @@ fi
 $CDO ymonsub ${out_tempfile}_NAtl.nc -ymonavg ${out_tempfile}_NAtl.nc ${out_tempfile}_anom.nc
 
 $CDO mul ${ineof_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_mon.nc
-$CDO -chname,${var},nao -fldmean ${out_tempfile}_proj1_mon.nc ${out_tempfile}_nao_nostd_mon.nc
+$CDO -chname,${evar},nao -fldmean ${out_tempfile}_proj1_mon.nc ${out_tempfile}_nao_nostd_mon.nc
 # $CDO ymonstd ${out_tempfile}_nao_nostd_mon.nc ${out_tempfile}_nao_ymonstd_mon.nc # to be used for daily index too
 
 if [[ ${tmean} == "mon" ]]
@@ -212,7 +213,7 @@ then
 
 	# --- Daily:
 	$CDO mul ${ineof_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_day.nc
-	$CDO -chname,${var},nao -fldmean ${out_tempfile}_proj1_day.nc ${out_tempfile}_nao_nostd_day.nc
+	$CDO -chname,${evar},nao -fldmean ${out_tempfile}_proj1_day.nc ${out_tempfile}_nao_nostd_day.nc
 	# Use monthy std for daily index too. As monthly std has 12 values only, we need t    o use the loop below to make sure we divide the 31 days from January by the respec    tive January mon std and so on for the other months:
 
 	MON=1
@@ -240,7 +241,7 @@ echo " "
 
 actor="v_flux"
 
-var="fz" 		# Variable name for the actor
+var="vt" 		# Variable name for the actor
 plev="100${punits}"	# pressure level with unit adjustment
 lon_min="0"		# Minimum longitude
 lon_max="0"		# Maximum longitude
@@ -273,7 +274,7 @@ echo " "
 
 actor="PoV"
 
-var="zg" 	# Variable name for the actor
+var="z" 	# Variable name for the actor
 plev="100${punits},85${punits},70${punits},60${punits},50${punits},40${punits},30${punits},20${punits},15${punits},10${punits}" # pressure level with unit adjustment
 lon_min="0"	# Minimum longitude
 lon_max="0"	# Maximum longitude
@@ -309,7 +310,7 @@ echo " "
 # ----====> Sib-SLP <====---- #
 
 actor="Sib-SLP"
-var="psl" 	# Variable name for the actor
+var="msl" 	# Variable name for the actor
 
 lat_min="40"	# Mininum latitude
 lat_max="65"	# Maximum latitude
@@ -339,7 +340,7 @@ echo " "
 # ----====> Ural-SLP <====---- #
 
 actor="Ural-SLP"
-var="psl" 	# Variable name for the actor
+var="msl" 	# Variable name for the actor
 
 lat_min="40"	# Mininum latitude
 lat_max="75"	# Maximum latitude

@@ -15,15 +15,13 @@ tmean="mon"
 punits=""
 lat_size="181"
 qbo_plev="30"
-model_dir=""
-model_filename=""
+# model_dir=""
+# model_filename=""
 out_dir="/ibrix/arch/aledata/tyrrell/erai/cen_data/"
 
 # Define variable paths and names
 era_dir="/ibrix/arch/aledata/tyrrell/erai/cen_data"
 psl_in_file="${era_dir}/erai_psl_1979-2014_${tmean}.nc"
-
-echo "Getting data from: ${group}"
 
 #========================================
 
@@ -42,13 +40,14 @@ echo " "
 actor="nao_eof1_mon"
 
 var="psl" 		# Variable name for the actor
+evar="msl" 		# Variable name for the actor
 lon_min="270"		# Minimum longitude
 lon_max="40"		# Maximum longitude
 lat_min="20"		# Mininum latitude
 lat_max="70"		# Maximum latitude
 
 
-in_file="${uz_in_file}"
+in_file="${psl_in_file}"
 
 out_filename="${actor}_${model}_${tmean}.nc"
 out_stdname="${actor}_${model}_${tmean}_ymonstd.nc"
@@ -68,9 +67,11 @@ fi
 
 #select lat, lon
 # cdo -r sellevel,${plev} ${in_file} ${out_tempfile}_1000.nc
-ncea -d lat,${lat_min}.0,${lat_max}.0 -d lon,${lon_min}.0,${lon_max}.0 ${in_file} ${out_tempfile}_NAtl.nc
+echo "select lat lon"
+ncea -d latitude,${lat_min}.0,${lat_max}.0 -d longitude,${lon_min}.0,${lon_max}.0 ${in_file} ${out_tempfile}_NAtl.nc
 # calculate anomalies, remove seasonal cycle
 # Test for generic grid, if true then use selgrid to only select latlon grid and ignore generic grid
+echo "cdo anoms"
 cdo ymonsub ${out_tempfile}_NAtl.nc -ymonavg ${out_tempfile}_NAtl.nc ${out_tempfile}_anom.nc
 
 #begin EOF calculation
@@ -103,7 +104,7 @@ cdo seltimestep,1 ${out_tempfile}_eof_weighted.nc ${out_file}
 
 # Calculate monthly std to be used to daily calc
 cdo mul ${out_file} ${out_tempfile}_anom.nc proj1_mon.nc
-cdo -chname,${var},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
+cdo -chname,${evar},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
 cdo ymonstd nao_nostd_mon.nc ${out_std} # to be used for daily index too
 
 rm ${out_tempfile}_*

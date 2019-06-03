@@ -143,8 +143,6 @@ echo " "
 
 #=========================================
 
-# ----====> NAO <====---- #
-
 actor="NAO"
 
 var="psl" 		# Variable name for the actor
@@ -155,17 +153,19 @@ lat_max="70"		# Maximum latitude
 
 in_file="${psl_in_file}"
 
-out_filename="${actor}_${model}_${tmean}.nc"
-
-ineof_filename="nao_eof1_mon_${model}_mon.nc"
+out_filename="${actor}_${group}_${tmean}.nc"
+ineof_filename="nao_eof1_mon_${group}_mon.nc"
+ineofstd_filename="nao_eof1_mon_${group}_mon_ymonstd.nc"
 # Note: monthly NAO pattern used for mon and day NAO
 out_tempfile="${out_dir}/tempfile"
 out_file="${out_dir}/${out_filename}"
 ineof_file="${out_dir}/${ineof_filename}"
+ineofstd_file="${out_dir}/${ineofstd_filename}"
 
 echo "Create ${actor} timeseries"
 echo "Input file: ${in_file}"
 echo "EOF input file: ${ineof_file}"
+echo "EOF ystdmon input file: ${ineofstd_file}"
 echo "Output file: ${out_file}"
 if [[ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 	echo "FILE NOT FOUND:"
@@ -174,12 +174,17 @@ if [[ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 fi
 if [[ `ls -1 ${ineof_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 	echo "MONTHLY EOF PATTERN FILE NOT FOUND:"
-	echo "MUST RUN run_ao_pattern.sh FIRST"
+	echo "MUST RUN run_nao_pattern.sh FIRST"
 	exit 1
 fi
 
+#--------------------- Compute NAO indices ---------------------#
+# Notes:
+#	- To get the NAO indices, we project the monthly and daily slp [20-70N, X-XX] onto the leading monthly EOF mode
+#	- Both (monthly and daily) indices are standardised by the MONTHLY std
+#	- **The length on the indices depends on the lenght of the z1000 anomalies used (in here periods longer than 1979-2000 can be input)
+
 #select lat, lon, plev
-#$CDO -r sellevel,${plev} ${in_file} ${out_tempfile}_1000.nc
 ncea -O -d lat,${lat_min}.0,${lat_max}.0 -d lon,${lon_min}.0,${lon_max}.0 ${in_file} ${out_tempfile}_NAtl.nc
 if [[ $($CDO sinfo ${out_tempfile}_NAtl.nc 2> /dev/null | grep generic) ]]
 then
@@ -190,13 +195,41 @@ fi
 # calculate anomalies, remove seasonal cycle
 $CDO ymonsub ${out_tempfile}_NAtl.nc -ymonavg ${out_tempfile}_NAtl.nc ${out_tempfile}_anom.nc
 
+$CDO mul ${ineof_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_mon.nc
+$CDO -chname,${var},nao -fldmean ${out_tempfile}_proj1_mon.nc ${out_tempfile}_nao_nostd_mon.nc
+# $CDO ymonstd ${out_tempfile}_nao_nostd_mon.nc ${out_tempfile}_nao_ymonstd_mon.nc # to be used for daily index too
 
-# --- Monthly:
-$CDO mul ${ineof_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_${tmean}.nc
-$CDO -chname,${var},nao -fldmean ${out_tempfile}_proj1_${tmean}.nc ${out_tempfile}_nao_nostd_${tmean}.nc
-$CDO y${tmean}std ${out_tempfile}_nao_nostd_${tmean}.nc ${out_tempfile}_nao_y${tmean}std_${tmean}.nc # to be used for daily index too
-$CDO div ${out_tempfile}_nao_nostd_${tmean}.nc ${out_tempfile}_nao_y${tmean}std_${tmean}.nc ${out_file}
-rm ${out_tempfile}_* # remove some files after having a quick look at them
+if [[ ${tmean} == "mon" ]]
+then
+	echo "Monthly tmean NOA calulation"
+	# --- Monthly:
+	$CDO -O div ${out_tempfile}_nao_nostd_mon.nc ${ineofstd_file} ${out_file}
+	rm -f ${out_tempfile}_* # remove some files after having a quick look at them
+
+elif [[ ${tmean} == "day" ]]
+then
+	echo "Daily tmean NAO calculation"
+
+	# --- Daily:
+	$CDO mul ${ineof_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_day.nc
+	$CDO -chname,${var},nao -fldmean ${out_tempfile}_proj1_day.nc ${out_tempfile}_nao_nostd_day.nc
+	# Use monthy std for daily index too. As monthly std has 12 values only, we need t    o use the loop below to make sure we divide the 31 days from January by the respec    tive January mon std and so on for the other months:
+
+	MON=1
+	while [ $MON -le 12 ] ;do
+		cdo -selmon,$MON ${out_tempfile}_nao_nostd_day.nc ${out_tempfile}f1_$MON.nc
+		cdo selmon,$MON ${ineofstd_file} ${out_tempfile}f2_$MON.nc
+		cdo div ${out_tempfile}f1_$MON.nc ${out_tempfile}f2_$MON.nc ${out_tempfile}nao_m$MON.nc
+		let MON=MON+1
+	done
+
+	cdo -O mergetime ${out_tempfile}nao_m*.nc ${out_file}
+
+	rm ${out_tempfile}* # remove some files after having a quick look at t    hem
+
+else 
+	echo "no NAO calculation"
+fi
 
 $nc2csv ${out_file}
 echo " "

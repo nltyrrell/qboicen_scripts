@@ -29,10 +29,12 @@ nc_obj = netCDF4.Dataset(ncfile,mode='r')
 
 # get the variable. I'm not sure whether the variable we want is always
 # the last one, print varname to check
-varname = nc_obj.variables.keys()[-1]
+varname = list(nc_obj.variables.keys())[-1]
+print(f"varname is {varname}")
 # Test we have a valid varname
-if varname not in ['zg','tas','ua','psl','fz','nao']:
-	varname = nc_obj.variables.keys()[-2]
+if varname not in ['z','t2m','u','msl','vt','nao']:
+    varname = list(nc_obj.variables.keys())[-2]
+    print(f"new varname is {varname}")
 
 var = nc_obj.variables[varname]
 vshape = var.shape

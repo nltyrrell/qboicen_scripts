@@ -109,11 +109,12 @@ model_dir="/gws/nopw/j04/qboi/${group}/${model}/${model}-LL/QBOi${exp}/${tmean}/
 model_filename="A${tmean}_MIROC-AGCM-LL_QBOi${exp}_${real}_*"
 actor_dir=""
 make_actor_dir=true
+mirocapsl_merge_time=true
 merge_time=true
 lat_size="160"
 qbo_plev="10"
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --qbo_plev=$qbo_plev
+$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --mirocapsl_merge_time=$mirocapsl_merge_time --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 echo ""

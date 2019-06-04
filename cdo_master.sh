@@ -260,24 +260,41 @@ if [[ `ls -1 ${ineof_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 	echo "MUST RUN run_nao_pattern.sh FIRST"
 	exit 1
 fi
-if  $merge_time ; then
-	merge_file="${out_dir}/merge_file.nc"
-	rm -f "${out_dir}/merge_file.nc"
-	$CDO mergetime ${in_file} ${merge_file}
-	in_file=${merge_file}
-fi
-if  $mirocapsl_merge_time ; then
-	if [[ $tmean == "day" ]]; then
-		merge_file1="${out_dir}/merge_file1.nc"
-		merge_file2="${out_dir}/merge_file2.nc"
+
+if $merge_time ; then
+	if $mirocapsl_merge_time ; then
+		echo "MIROC-A merge"
+		if [[ $tmean == "day" ]]; then
+			echo "DAY merge"
+			rm -f "${out_dir}/merge_file?.nc"
+			merge_file1="${out_dir}/merge_file1.nc"
+			merge_file2="${out_dir}/merge_file2.nc"
+			merge_file="${out_dir}/merge_file0.nc"
+			$CDO -O mulc,0.01 -mergetime ${in_file}{198001,198101}* ${merge_file1}
+			$CDO -O delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
+			$CDO -O mergetime ${merge_file1} ${merge_file2} ${merge_file}
+			in_file=${merge_file}
+		fi
+		if [[ $tmean == "mon" ]]; then
+			echo "MON merge"
+			rm -f "${out_dir}/merge_file?.nc"
+			merge_file1="${out_dir}/merge_file1.nc"
+			merge_file2="${out_dir}/merge_file2.nc"
+			merge_file3="${out_dir}/merge_file3.nc"
+			merge_file="${out_dir}/merge_file0.nc"
+			$CDO -O mulc,0.00000001 -mergetime ${in_file}197901* ${merge_file1}
+			$CDO -O mulc,0.01 -mergetime ${in_file}{198001,198101}* ${merge_file2}
+			$CDO -O delete,year=1979,1980,1981 -mergetime ${in_file} ${merge_file3}
+			$CDO -O mergetime ${merge_file1} ${merge_file2} ${merge_file3} ${merge_file}
+			in_file=${merge_file}
+		fi
+	else
+		echo "mergetime, not MIROC-A"
 		merge_file="${out_dir}/merge_file.nc"
-		rm -f "${out_dir}/merge_file*.nc"
-		$CDO mulc,0.01 -mergetime "${in_file}{198001,198101}*" ${merge_file1}
-		$CDO delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
-		$CDO mergetime ${merge_file1} ${merge_file2} ${merge_file}
+		rm -f "${out_dir}/merge_file.nc"
+		$CDO mergetime ${in_file} ${merge_file}
 		in_file=${merge_file}
 	fi
-
 fi
 
 #--------------------- Compute NAO indices ---------------------#
@@ -336,7 +353,7 @@ fi
 
 
 $nc2csv ${out_file}
-rm -f ${merge_file}
+rm -f "${out_dir}/merge_file*.nc"
 echo " "
 echo "================================"
 echo " "
@@ -467,24 +484,43 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	echo "${in_file}"
 	exit 1
 fi
-if  $merge_time ; then
-	merge_file="${out_dir}/merge_file.nc"
-	rm -f "${out_dir}/merge_file.nc"
-	$CDO mergetime ${in_file} ${merge_file}
-	in_file=${merge_file}
-fi
-if  $mirocapsl_merge_time ; then
-	if [[ $tmean == "day" ]]; then
-		merge_file1="${out_dir}/merge_file1.nc"
-		merge_file2="${out_dir}/merge_file2.nc"
+# The following is required because the MIROC-A psl 
+# has the wrong units for 1979 (monthly data 10^8), 
+# 1980, 1981 (daily and monthly, 10^2)
+if $merge_time ; then
+	if $mirocapsl_merge_time ; then
+		echo "MIROC-A merge"
+		if [[ $tmean == "day" ]]; then
+			echo "DAY merge"
+			rm -f "${out_dir}/merge_file?.nc"
+			merge_file1="${out_dir}/merge_file1.nc"
+			merge_file2="${out_dir}/merge_file2.nc"
+			merge_file="${out_dir}/merge_file0.nc"
+			$CDO -O mulc,0.01 -mergetime ${in_file}{198001,198101}* ${merge_file1}
+			$CDO -O delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
+			$CDO -O mergetime ${merge_file1} ${merge_file2} ${merge_file}
+			in_file=${merge_file}
+		fi
+		if [[ $tmean == "mon" ]]; then
+			echo "MON merge"
+			rm -f "${out_dir}/merge_file?.nc"
+			merge_file1="${out_dir}/merge_file1.nc"
+			merge_file2="${out_dir}/merge_file2.nc"
+			merge_file3="${out_dir}/merge_file3.nc"
+			merge_file="${out_dir}/merge_file0.nc"
+			$CDO -O mulc,0.00000001 -mergetime ${in_file}197901* ${merge_file1}
+			$CDO -O mulc,0.01 -mergetime ${in_file}{198001,198101}* ${merge_file2}
+			$CDO -O delete,year=1979,1980,1981 -mergetime ${in_file} ${merge_file3}
+			$CDO -O mergetime ${merge_file1} ${merge_file2} ${merge_file3} ${merge_file}
+			in_file=${merge_file}
+		fi
+	else
+		echo "mergetime, not MIROC-A"
 		merge_file="${out_dir}/merge_file.nc"
-		rm -f "${out_dir}/merge_file*.nc"
-		$CDO mulc,0.01 -mergetime "${in_file}{198001,198101}*" ${merge_file1}
-		$CDO delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
-		$CDO mergetime ${merge_file1} ${merge_file2} ${merge_file}
+		rm -f "${out_dir}/merge_file.nc"
+		$CDO mergetime ${in_file} ${merge_file}
 		in_file=${merge_file}
 	fi
-
 fi
 
 $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
@@ -522,24 +558,43 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	echo "${in_file}"
 	exit 1
 fi
-if  $merge_time  ; then
-	merge_file="${out_dir}/merge_file.nc"
-	rm -f "${out_dir}/merge_file.nc"
-	$CDO mergetime ${in_file} ${merge_file}
-	in_file=${merge_file}
-fi
-if  $mirocapsl_merge_time ; then
-	if [[ $tmean == "day" ]]; then
-		merge_file1="${out_dir}/merge_file1.nc"
-		merge_file2="${out_dir}/merge_file2.nc"
+# The following is required because the MIROC-A psl 
+# has the wrong units for 1979 (monthly data 10^8), 
+# 1980, 1981 (daily and monthly, 10^2)
+if $merge_time ; then
+	if $mirocapsl_merge_time ; then
+		echo "MIROC-A merge"
+		if [[ $tmean == "day" ]]; then
+			echo "DAY merge"
+			rm -f "${out_dir}/merge_file?.nc"
+			merge_file1="${out_dir}/merge_file1.nc"
+			merge_file2="${out_dir}/merge_file2.nc"
+			merge_file="${out_dir}/merge_file0.nc"
+			$CDO -O mulc,0.01 -mergetime ${in_file}{198001,198101}* ${merge_file1}
+			$CDO -O delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
+			$CDO -O mergetime ${merge_file1} ${merge_file2} ${merge_file}
+			in_file=${merge_file}
+		fi
+		if [[ $tmean == "mon" ]]; then
+			echo "MON merge"
+			rm -f "${out_dir}/merge_file?.nc"
+			merge_file1="${out_dir}/merge_file1.nc"
+			merge_file2="${out_dir}/merge_file2.nc"
+			merge_file3="${out_dir}/merge_file3.nc"
+			merge_file="${out_dir}/merge_file0.nc"
+			$CDO -O mulc,0.00000001 -mergetime ${in_file}197901* ${merge_file1}
+			$CDO -O mulc,0.01 -mergetime ${in_file}{198001,198101}* ${merge_file2}
+			$CDO -O delete,year=1979,1980,1981 -mergetime ${in_file} ${merge_file3}
+			$CDO -O mergetime ${merge_file1} ${merge_file2} ${merge_file3} ${merge_file}
+			in_file=${merge_file}
+		fi
+	else
+		echo "mergetime, not MIROC-A"
 		merge_file="${out_dir}/merge_file.nc"
-		rm -f "${out_dir}/merge_file*.nc"
-		$CDO mulc,0.01 -mergetime "${in_file}{198001,198101}*" ${merge_file1}
-		$CDO delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
-		$CDO mergetime ${merge_file1} ${merge_file2} ${merge_file}
+		rm -f "${out_dir}/merge_file.nc"
+		$CDO mergetime ${in_file} ${merge_file}
 		in_file=${merge_file}
 	fi
-
 fi
 
 $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}

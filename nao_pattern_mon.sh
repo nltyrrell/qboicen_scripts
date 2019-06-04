@@ -9,7 +9,7 @@ set -e
 # 
 # nicholas tyrrell 2018
 # 
-
+CDO=/home/users/tyrrell/miniconda3/bin/cdo
 
 #============ Read in arguments from command line ===============
 
@@ -54,6 +54,9 @@ while [ $# -gt 0 ]; do
 		--merge_time=*)
 		  merge_time="${1#*=}"
 		  ;;
+		--mirocapsl_merge_time=*)
+		  mirocapsl_merge_time="${1#*=}"
+		  ;;
 		*)
 	esac
 	shift
@@ -73,6 +76,18 @@ echo "Out directory: ${out_dir}"
 echo " "
 echo "================================"
 echo " "
+
+
+# fill in empty arguments
+if [ -z "${make_actor_dir}" ]; then
+	make_actor_dir="false"
+fi
+if [ -z "${merge_time}" ]; then
+	merge_time="false"
+fi
+if [ -z "${mirocapsl_merge_time}" ]; then
+	mirocapsl_merge_time="false"
+fi
 #=========================================
 
 # ----====> EOF1 for NAO <====---- #
@@ -105,11 +120,31 @@ if [[ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 	echo "${in_file}"
 	exit 1
 fi
-if [[ "$merge_time" ]]; then
-	merge_file="${out_dir}/merge_file.nc"
-	cdo mergetime ${in_file} ${merge_file}
-	in_file=${merge_file}
+
+if $merge_time ; then
+	echo "MERGETIME TRUE"
+	if $mirocapsl_merge_time ; then
+		echo "MIROC-A merge"
+		echo "MON merge"
+		rm -f "${out_dir}/merge_file?.nc"
+		merge_file1="${out_dir}/merge_file1.nc"
+		merge_file2="${out_dir}/merge_file2.nc"
+		merge_file3="${out_dir}/merge_file3.nc"
+		merge_file="${out_dir}/merge_file0.nc"
+		$CDO -O mulc,0.00000001 -mergetime ${in_file}197901* ${merge_file1}
+		$CDO -O mulc,0.01 -mergetime ${in_file}{198001,198101}* ${merge_file2}
+		$CDO -O delete,year=1979,1980,1981 -mergetime ${in_file} ${merge_file3}
+		$CDO -O mergetime ${merge_file1} ${merge_file2} ${merge_file3} ${merge_file}
+		in_file=${merge_file}
+	else
+		echo "mergetime, not MIROC-A"
+		merge_file="${out_dir}/merge_file.nc"
+		rm -f "${out_dir}/merge_file.nc"
+		$CDO mergetime ${in_file} ${merge_file}
+		in_file=${merge_file}
+	fi
 fi
+
 
 #select lat, lon
 # cdo -r sellevel,${plev} ${in_file} ${out_tempfile}_1000.nc

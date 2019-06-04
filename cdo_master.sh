@@ -56,6 +56,7 @@ while [ $# -gt 0 ]; do
 		  ;;
 		--merge_time=*)
 		  merge_time="${1#*=}"
+
 		  ;;
 		--mirocapsl_merge_time=*)
 		  mirocapsl_merge_time="${1#*=}"
@@ -82,6 +83,18 @@ echo "Out directory: ${out_dir}"
 echo " "
 echo "================================"
 echo " "
+
+# fill in empty arguments
+if [ -z "${make_actor_dir}" ]; then
+	make_actor_dir="false"
+fi
+if [ -z "${merge_time}" ]; then
+	merge_time="false"
+fi
+if [ -z "${mirocapsl_merge_time}" ]; then
+	mirocapsl_merge_time="false"
+fi
+
 #=========================================
 
 # ----====> QBO <====---- #
@@ -115,6 +128,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 fi
 
 if $merge_time; then
+	echo "MERGETIME TRUE"
 	merge_file="${out_dir}/merge_file.nc"
 	rm -f "${out_dir}/merge_file.nc"
 	echo "Merge files: ${in_file}"
@@ -160,6 +174,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	exit 1
 fi
 if $merge_time; then
+	echo "MERGETIME TRUE"
 	merge_file="${out_dir}/merge_file.nc"
 	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
@@ -202,6 +217,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	exit 1
 fi
 if $merge_time  ; then
+	echo "MERGETIME TRUE"
 	merge_file="${out_dir}/merge_file.nc"
 	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
@@ -262,6 +278,7 @@ if [[ `ls -1 ${ineof_file} 2>/dev/null | wc -l ` -lt 1 ]]; then
 fi
 
 if $merge_time ; then
+	echo "MERGETIME TRUE"
 	if $mirocapsl_merge_time ; then
 		echo "MIROC-A merge"
 		if [[ $tmean == "day" ]]; then
@@ -394,6 +411,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	exit 1
 fi
 if  $merge_time  ; then
+	echo "MERGETIME TRUE"
 	merge_file="${out_dir}/merge_file.nc"
 	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
@@ -440,6 +458,7 @@ if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
 	exit 1
 fi
 if  $merge_time  ; then
+	echo "MERGETIME TRUE"
 	merge_file="${out_dir}/merge_file.nc"
 	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
@@ -488,6 +507,7 @@ fi
 # has the wrong units for 1979 (monthly data 10^8), 
 # 1980, 1981 (daily and monthly, 10^2)
 if $merge_time ; then
+	echo "MERGETIME TRUE"
 	if $mirocapsl_merge_time ; then
 		echo "MIROC-A merge"
 		if [[ $tmean == "day" ]]; then
@@ -562,6 +582,7 @@ fi
 # has the wrong units for 1979 (monthly data 10^8), 
 # 1980, 1981 (daily and monthly, 10^2)
 if $merge_time ; then
+	echo "MERGETIME TRUE"
 	if $mirocapsl_merge_time ; then
 		echo "MIROC-A merge"
 		if [[ $tmean == "day" ]]; then

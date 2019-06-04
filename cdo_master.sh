@@ -57,6 +57,9 @@ while [ $# -gt 0 ]; do
 		--merge_time=*)
 		  merge_time="${1#*=}"
 		  ;;
+		--mirocapsl_merge_time=*)
+		  mirocapsl_merge_time="${1#*=}"
+		  ;;
 		--qbo_plev=*)
 		  qbo_plev="${1#*=}"
 		  ;;
@@ -263,6 +266,19 @@ if  $merge_time ; then
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
+if  $mirocapsl_merge_time ; then
+	if [[ $tmean == "day" ]]; then
+		merge_file1="${out_dir}/merge_file1.nc"
+		merge_file2="${out_dir}/merge_file2.nc"
+		merge_file="${out_dir}/merge_file.nc"
+		rm -f "${out_dir}/merge_file*.nc"
+		$CDO mulc,0.01 -mergetime "${in_file}{198001,198101}*" ${merge_file1}
+		$CDO delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
+		$CDO mergetime ${merge_file1} ${merge_file2} ${merge_file}
+		in_file=${merge_file}
+	fi
+
+fi
 
 #--------------------- Compute NAO indices ---------------------#
 # Notes:
@@ -457,6 +473,19 @@ if  $merge_time ; then
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
 fi
+if  $mirocapsl_merge_time ; then
+	if [[ $tmean == "day" ]]; then
+		merge_file1="${out_dir}/merge_file1.nc"
+		merge_file2="${out_dir}/merge_file2.nc"
+		merge_file="${out_dir}/merge_file.nc"
+		rm -f "${out_dir}/merge_file*.nc"
+		$CDO mulc,0.01 -mergetime "${in_file}{198001,198101}*" ${merge_file1}
+		$CDO delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
+		$CDO mergetime ${merge_file1} ${merge_file2} ${merge_file}
+		in_file=${merge_file}
+	fi
+
+fi
 
 $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
 $nc2csv ${out_file}
@@ -498,6 +527,19 @@ if  $merge_time  ; then
 	rm -f "${out_dir}/merge_file.nc"
 	$CDO mergetime ${in_file} ${merge_file}
 	in_file=${merge_file}
+fi
+if  $mirocapsl_merge_time ; then
+	if [[ $tmean == "day" ]]; then
+		merge_file1="${out_dir}/merge_file1.nc"
+		merge_file2="${out_dir}/merge_file2.nc"
+		merge_file="${out_dir}/merge_file.nc"
+		rm -f "${out_dir}/merge_file*.nc"
+		$CDO mulc,0.01 -mergetime "${in_file}{198001,198101}*" ${merge_file1}
+		$CDO delete,year=1980,1981 -mergetime ${in_file} ${merge_file2}
+		$CDO mergetime ${merge_file1} ${merge_file2} ${merge_file}
+		in_file=${merge_file}
+	fi
+
 fi
 
 $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}

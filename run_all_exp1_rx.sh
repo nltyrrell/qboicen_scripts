@@ -151,7 +151,7 @@ echo ""
 #============ 
 
 real="r3i1p1"
-group="MOHC"; model="UMGA7"; years="197901-200912"
+group="MOHC"; model="UMGA7"; years="197901-200902"
 model_dir="/gws/nopw/j04/qboi/${group}/${model}/QBOi${exp}/${tmean}/atmos"
 model_filename="A${tmean}_UMGA7_QBOi${exp}_${real}_${years}.nc"
 actor_dir=""; make_actor_dir=true
@@ -159,7 +159,7 @@ lat_size="145"; qbo_plev="10"; punits="00"
 $script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 real="r4i1p1"
-group="MOHC"; model="UMGA7"; years="197901-200912"
+group="MOHC"; model="UMGA7"; years="197901-200902"
 model_dir="/gws/nopw/j04/qboi/${group}/${model}/QBOi${exp}/${tmean}/atmos"
 model_filename="A${tmean}_UMGA7_QBOi${exp}_${real}_${years}.nc"
 actor_dir=""; make_actor_dir=true

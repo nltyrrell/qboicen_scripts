@@ -215,7 +215,7 @@ cdo -chname,${var},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
 cdo ymonstd nao_nostd_mon.nc ${out_std} # to be used for daily index too
 
 rm -f ${merge_file}
-# rm ${out_tempfile}_*
+rm ${out_tempfile}_*
 echo " "
 echo "================================"
 echo " "

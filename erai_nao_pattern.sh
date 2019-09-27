@@ -100,16 +100,33 @@ done
 rm ${out_tempfile}_explvar_some.nc ${out_tempfile}_nomissval.nc ${out_tempfile}_pc_weighted_00001.nc
 
 # Select first EOF only (timestep should be = 1 for next part to work properly)
-cdo seltimestep,1 ${out_tempfile}_eof_weighted.nc ${out_file}
+cdo seltimestep,1 ${out_tempfile}_eof_weighted.nc ${out_tempfile}_norm.nc
+
+# calculate and fix sign of pattern
+cdo -r remapnn,lon=337/lat=65 ${out_tempfile}_norm.nc ${out_tempfile}_Iceland.nc
+cdo -r remapnn,lon=334/lat=38 ${out_tempfile}_norm.nc ${out_tempfile}_Azores.nc
+cdo sub ${out_tempfile}_Azores.nc ${out_tempfile}_Iceland.nc ${out_tempfile}_singl    enao.nc
+
+nao_test=`cdo output ${out_tempfile}_singlenao.nc`
+echo " "
+echo "determine change to sign of NAO pattern"
+echo $nao_test
+echo " "
+cp ${out_tempfile}_norm.nc ${out_file}
+
+if (( $(echo "$nao_test < 0" | bc -l) )); then
+    echo " "
+    echo $nao_test
+    echo "multiply NAO pattern by -1"
+    cdo mulc,-1 ${out_tempfile}_norm.nc ${out_file}
+    echo " "
+fi
 
 # Calculate monthly std to be used to daily calc
-cdo mul ${out_file} ${out_tempfile}_anom.nc proj1_mon.nc
-cdo -chname,${evar},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
-# Test for sign of NAO
-cdo -r fldmean -sellonlatbox,-25,${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
-cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+cdo mul ${out_file} ${out_tempfile}_anom.nc ${out_tempfile}_proj1_mon.nc
+cdo -chname,${evar},nao -fldmean ${out_tempfile}_proj1_mon.nc ${out_tempfile}_nao_nostd_mon.nc
 
-cdo ymonstd nao_nostd_mon.nc ${out_std} # to be used for daily index too
+cdo ymonstd ${out_tempfile}_nao_nostd_mon.nc ${out_std} # to be used for daily index too
 
 rm ${out_tempfile}_*
 echo " "

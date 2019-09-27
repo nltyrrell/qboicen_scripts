@@ -105,6 +105,10 @@ cdo seltimestep,1 ${out_tempfile}_eof_weighted.nc ${out_file}
 # Calculate monthly std to be used to daily calc
 cdo mul ${out_file} ${out_tempfile}_anom.nc proj1_mon.nc
 cdo -chname,${evar},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
+# Test for sign of NAO
+cdo -r fldmean -sellonlatbox,-25,${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+cdo -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+
 cdo ymonstd nao_nostd_mon.nc ${out_std} # to be used for daily index too
 
 rm ${out_tempfile}_*

@@ -186,19 +186,26 @@ done
 rm ${out_tempfile}_explvar_some.nc ${out_tempfile}_nomissval.nc ${out_tempfile}_pc_weighted_00001.nc
 
 # Select first EOF only (timestep should be = 1 for next part to work properly)
-cdo seltimestep,1 ${out_tempfile}_eof_weighted.nc ${out_file}
+cdo seltimestep,1 ${out_tempfile}_eof_weighted.nc ${out_tempfile}_norm.nc
 
-# Calculate monthly std to be used to daily calc
-cdo mul ${out_file} ${out_tempfile}_anom.nc proj1_mon.nc
-cdo -chname,${var},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
-cdo ymonstd nao_nostd_mon.nc ${out_std} # to be used for daily index too
+# calculate and fix sign of pattern
+cdo -r remapnn,lon=337/lat=65 ${out_tempfile}_norm.nc ${out_tempfile}_Iceland.nc
+cdo -r remapnn,lon=334/lat=38 ${out_tempfile}_norm.nc ${out_tempfile}_Azores.nc
+cdo sub ${out_tempfile}_Azores.nc ${out_tempfile}_Iceland.nc
+${out_tempfile}_singlenao.nc
 
-rm -f ${merge_file}
-rm ${out_tempfile}_*
+
+# # Calculate monthly std to be used to daily calc
+# cdo mul ${out_file} ${out_tempfile}_anom.nc proj1_mon.nc
+# cdo -chname,${var},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
+# cdo ymonstd nao_nostd_mon.nc ${out_std} # to be used for daily index too
+# 
+# rm -f ${merge_file}
+# rm ${out_tempfile}_*
+# echo " "
+# echo "================================"
 echo " "
-echo "================================"
-echo " "
-echo "Finished AO patterm for ${group}${model} "
+echo "Finished NAO patterm for ${group}${model} "
 
 
 

@@ -109,6 +109,7 @@ in_file="${actor_dir}/${in_filename}"
 out_filename="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
 out_stdname="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}_ymonstd.nc"
 out_tempfile="${out_dir}/tempfile"
+rm -f ${out_tempfile}_*
 out_file="${out_dir}/${out_filename}"
 out_std="${out_dir}/${out_stdname}"
 
@@ -191,19 +192,32 @@ cdo seltimestep,1 ${out_tempfile}_eof_weighted.nc ${out_tempfile}_norm.nc
 # calculate and fix sign of pattern
 cdo -r remapnn,lon=337/lat=65 ${out_tempfile}_norm.nc ${out_tempfile}_Iceland.nc
 cdo -r remapnn,lon=334/lat=38 ${out_tempfile}_norm.nc ${out_tempfile}_Azores.nc
-cdo sub ${out_tempfile}_Azores.nc ${out_tempfile}_Iceland.nc
-${out_tempfile}_singlenao.nc
+cdo sub ${out_tempfile}_Azores.nc ${out_tempfile}_Iceland.nc ${out_tempfile}_singlenao.nc
 
+nao_test=`cdo output ${out_tempfile}_singlenao.nc`
+echo " "
+echo "determine change to sign of NAO pattern"
+echo $nao_test
+echo " "
+cp ${out_tempfile}_norm.nc ${out_file}
 
-# # Calculate monthly std to be used to daily calc
-# cdo mul ${out_file} ${out_tempfile}_anom.nc proj1_mon.nc
-# cdo -chname,${var},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
-# cdo ymonstd nao_nostd_mon.nc ${out_std} # to be used for daily index too
-# 
-# rm -f ${merge_file}
+if (( $(echo "$nao_test < 0" | bc -l) )); then
+	echo " "
+	echo $nao_test
+	echo "multiply NAO pattern by -1"
+	cdo mulc,-1 ${out_tempfile}_norm.nc ${out_file}
+	echo " "
+fi
+
+# Calculate monthly std to be used to daily calc
+cdo mul ${out_file} ${out_tempfile}_anom.nc proj1_mon.nc
+cdo -chname,${var},nao -fldmean proj1_mon.nc nao_nostd_mon.nc
+cdo ymonstd nao_nostd_mon.nc ${out_std} # to be used for daily index too
+
+rm -f ${merge_file}
 # rm ${out_tempfile}_*
-# echo " "
-# echo "================================"
+echo " "
+echo "================================"
 echo " "
 echo "Finished NAO patterm for ${group}${model} "
 

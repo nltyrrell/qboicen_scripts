@@ -105,7 +105,10 @@ cdo seltimestep,1 ${out_tempfile}_eof_weighted.nc ${out_tempfile}_norm.nc
 # calculate and fix sign of pattern
 cdo -r remapnn,lon=337/lat=65 ${out_tempfile}_norm.nc ${out_tempfile}_Iceland.nc
 cdo -r remapnn,lon=334/lat=38 ${out_tempfile}_norm.nc ${out_tempfile}_Azores.nc
-cdo sub ${out_tempfile}_Azores.nc ${out_tempfile}_Iceland.nc ${out_tempfile}_singl    enao.nc
+echo " "
+echo " "
+echo "${out_tempfile}_Azores.nc ${out_tempfile}_Iceland.nc ${out_tempfile}_singl    enao.nc"
+cdo sub ${out_tempfile}_Azores.nc ${out_tempfile}_Iceland.nc ${out_tempfile}_singlenao.nc 
 
 nao_test=`cdo output ${out_tempfile}_singlenao.nc`
 echo " "

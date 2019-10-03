@@ -97,6 +97,55 @@ fi
 
 #=========================================
 
+# ----====> u60 <====---- #
+
+actor="u60"
+
+var="ua" 		# Variable name for the actor
+plev="10${punits}"	# pressure in hPa level with unit adjustment
+lon_min="0"		# Minimum longitude
+lon_max="0"		# Maximum longitude
+lat_min="55.0"		# Mininum latitude
+lat_max="65.0"		# Maximum latitude
+
+if "$make_actor_dir" ; then
+	actor_dir="${model_dir}/${var}/${real}"
+fi
+in_filename="${var}_Z${model_filename}" 	# Note the Z for zonal variables
+in_file="${actor_dir}/${in_filename}"
+
+out_filename="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
+out_tempfile="${out_dir}/tempfile.nc"
+out_file="${out_dir}/${out_filename}"
+
+echo "Create ${actor} timeseries"
+echo "Input file: ${in_file}"
+echo "Output file: ${out_file}"
+if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
+	echo "FILE NOT FOUND:"
+	echo "${in_file}"
+	exit 1
+fi
+
+if $merge_time; then
+	echo "MERGETIME TRUE"
+	merge_file="${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
+	echo "Merge files: ${in_file}"
+	echo "into merge file ${merge_file}"
+	$CDO mergetime ${in_file} ${merge_file}
+	in_file=${merge_file}
+fi
+
+$CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
+$nc2csv ${out_file}
+rm -f ${merge_file}
+rm -f ${out_tempfile}
+echo " "
+echo "================================"
+echo " "
+
 # ----====> QBO <====---- #
 
 actor="QBO"

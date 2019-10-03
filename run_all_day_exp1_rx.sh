@@ -2,14 +2,15 @@
 
 set -e
 
-# This script runs the CDO commands for all models, using cdo_master.sh
+# This script runs the CDO commands for all models, using $cdo_master
 # then combines all timeseries into one CSV file per model
 
 #
 #============
-# Use cdo_master.sh to get the timeseries for all models
-# cdo_master.sh.sh script is:
+# Use $cdo_master to get the timeseries for all models
+# $cdo_master.sh script is:
 script_dir="/gws/nopw/j04/gotham/cen_qboi/scripts" 
+cdo_master="addts_master.sh" #"cdo_master.sh"
 
 #Global variables
 exp="Exp1"
@@ -30,7 +31,7 @@ make_actor_dir=false
 lat_size="192"
 qbo_plev="20" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
 group="CAM" 	# Group name
@@ -45,7 +46,7 @@ make_actor_dir=false
 lat_size="192"
 qbo_plev="20" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
 group="CAM" 	# Group name
@@ -60,7 +61,7 @@ make_actor_dir=false
 lat_size="192"
 qbo_plev="20" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -84,7 +85,7 @@ make_actor_dir=true
 lat_size="48"
 qbo_plev="7" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -100,7 +101,7 @@ make_actor_dir=true
 lat_size="48"
 qbo_plev="7" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -116,7 +117,7 @@ make_actor_dir=true
 lat_size="48"
 qbo_plev="7" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 echo ""
@@ -138,7 +139,7 @@ make_actor_dir=true
 lat_size="96"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 echo ""
@@ -176,7 +177,7 @@ mirocapsl_merge_time=true
 lat_size="160"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --mirocapsl_merge_time=$mirocapsl_merge_time --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --mirocapsl_merge_time=$mirocapsl_merge_time --qbo_plev=$qbo_plev
 
 #$script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 #group="MIROC" 	# Group name
@@ -193,7 +194,7 @@ $script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmea
 #lat_size="160"
 #qbo_plev="10" #QBO level in hPa
 #
-#$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --mirocapsl_merge_time=$mirocapsl_merge_time --qbo_plev=$qbo_plev
+#$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --mirocapsl_merge_time=$mirocapsl_merge_time --qbo_plev=$qbo_plev
 #
 #$script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 #echo ""
@@ -216,7 +217,7 @@ merge_time=true
 lat_size="64"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -233,7 +234,7 @@ merge_time=true
 lat_size="64"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -250,7 +251,7 @@ merge_time=true
 lat_size="64"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 echo ""
@@ -273,7 +274,7 @@ merge_time=true
 lat_size="145"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev --merge_time=$merge_time
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev --merge_time=$merge_time
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -290,7 +291,7 @@ merge_time=true
 lat_size="145"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev --merge_time=$merge_time
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev --merge_time=$merge_time
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -307,7 +308,7 @@ merge_time=true
 lat_size="145"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev --merge_time=$merge_time
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev --merge_time=$merge_time
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 echo ""
@@ -329,7 +330,7 @@ echo ""
 #lat_size="160"
 # qbo_plev="10" #QBO level in hPa
 #
-#$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir
+#$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir
 #
 #$script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 #echo ""
@@ -351,7 +352,7 @@ make_actor_dir=false
 lat_size="192"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -367,7 +368,7 @@ make_actor_dir=false
 lat_size="192"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
@@ -383,7 +384,7 @@ make_actor_dir=false
 lat_size="192"
 qbo_plev="10" #QBO level in hPa
 
-$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
+$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --qbo_plev=$qbo_plev
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 echo ""
@@ -405,7 +406,7 @@ echo ""
 #lat_size="145"
 # qbo_plev="15" #QBO level in hPa
 #
-#$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir
+#$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir
 #
 #$script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 #echo ""
@@ -427,7 +428,7 @@ echo ""
 #lat_size="145"
 #qbo_plev="10" #QBO level in hPa
 #
-#$script_dir/cdo_master.sh --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir
+#$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir
 #
 #$script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 #echo ""

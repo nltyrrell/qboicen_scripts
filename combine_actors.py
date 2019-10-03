@@ -45,13 +45,19 @@ UralSLP_infile = "{0}/{1}_{2}".format(model_dir,"Ural-SLP",model_fname)
 UralSLP = pd.read_csv(UralSLP_infile,header=None, names=["date","Ural-SLP"])
 v_flux_infile = "{0}/{1}_{2}".format(model_dir,"v_flux",model_fname)
 v_flux = pd.read_csv(v_flux_infile,header=None, names=["date","v_flux"])
+u60_infile = "{0}/{1}_{2}".format(model_dir,"u60",model_fname)
+u60 = pd.read_csv(u60_infile,header=None, names=["date","u60"])
+# NINO34_infile = "{0}/{1}_{2}".format(model_dir,"NINO34",model_fname)
+# NINO34 = pd.read_csv(NINO34_infile,header=None, names=["date","NINO34"])
 
 # Concatenate into single dataframe
 allactors_df = pd.concat([NAO["date"],
 			 NAO["NAO"],
 			 BKsic["BK-SIC"],
+			 #NINO34["Nino34"],
 			 EAtas["EA-tas"],
 			 PoV["PoV"],
+			 u60["u60"],
 			 QBO["QBO"],
 			 SibSLP["Sib-SLP"],
 			 UralSLP["Ural-SLP"],

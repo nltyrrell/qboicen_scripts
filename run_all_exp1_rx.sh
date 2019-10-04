@@ -11,7 +11,7 @@ set -e
 # Change to addts_master.sh to add new ts (without recalc all)
 # $cdo_master.sh script is in:
 script_dir="/gws/nopw/j04/gotham/cen_qboi/scripts" 
-cdo_master="cdo_master.sh" #"addts_master.sh" #"cdo_master.sh"
+cdo_master="addts_master.sh" #"cdo_master.sh"
 
 #Global variables
 exp="Exp1"

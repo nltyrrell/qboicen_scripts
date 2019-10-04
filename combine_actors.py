@@ -39,6 +39,8 @@ PoV_infile = "{0}/{1}_{2}".format(model_dir,"PoV",model_fname)
 PoV = pd.read_csv(PoV_infile,header=None, names=["date","PoV"])
 QBO_infile = "{0}/{1}_{2}".format(model_dir,"QBO",model_fname)
 QBO = pd.read_csv(QBO_infile,header=None, names=["date","QBO"])
+NINO34_infile = "{0}/{1}_{2}".format(model_dir,"NINO34",model_fname)
+NINO34 = pd.read_csv(NINO34_infile,header=None, names=["date","NINO34"])
 SibSLP_infile = "{0}/{1}_{2}".format(model_dir,"Sib-SLP",model_fname)
 SibSLP = pd.read_csv(SibSLP_infile,header=None, names=["date","Sib-SLP"])
 UralSLP_infile = "{0}/{1}_{2}".format(model_dir,"Ural-SLP",model_fname)
@@ -59,6 +61,7 @@ allactors_df = pd.concat([NAO["date"],
 			 PoV["PoV"],
 			 u60["u60"],
 			 QBO["QBO"],
+			 NINO34["NINO34"],
 			 SibSLP["Sib-SLP"],
 			 UralSLP["Ural-SLP"],
 			 v_flux["v_flux"]],axis=1)

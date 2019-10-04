@@ -1,13 +1,17 @@
 
+To run scripts for all models
 Use:
-run_all_exp1.sh or run_all_exp2.sh
-
-to run scripts for all models
+run_all_exp1_rx.sh or run_all_day_exp1_rx.sh
 
 to add indices, use the script
 cdo_master.sh
+or 
+addts_master.sh
 
-Nicholas Tyrrell 9/2018
+output will be in  
+/gws/nopw/j04/gotham/cen_qboi/Exp1/
+
+Nicholas Tyrrell 10/2019
 
 OLD ROUTINE
 To generate output from the QBOi models for use in a jupyter-notebook 

@@ -95,70 +95,24 @@ if [ -z "${mirocapsl_merge_time}" ]; then
 	mirocapsl_merge_time="false"
 fi
 
-#=========================================
-# ----====> EA-tas <====---- #
-
-actor="NINO34"
-var="tas" 	# Variable name for the actor
-
-lon_min="190"	# Minimum longitude
-lon_max="240"	# Maximum longitude
-lat_min="-5"	# Mininum latitude
-lat_max="5"	# Maximum latitude
-
-if "$make_actor_dir" ; then
-	actor_dir="${model_dir}/${var}/${real}"
-fi
-in_filename="${var}_${model_filename}" 	
-in_file="${actor_dir}/${in_filename}"
-
-out_filename="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
-out_file="${out_dir}/${out_filename}"
-
-echo "Create ${actor} timeseries"
-echo "Input file: ${in_file}"
-echo "Output file: ${out_file}"
-if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
-	echo "FILE NOT FOUND:"
-	echo "${in_file}"
-	exit 1
-fi
-if $merge_time  ; then
-	echo "MERGETIME TRUE"
-	merge_file="${out_dir}/merge_file.nc"
-	rm -f "${out_dir}/merge_file.nc"
-	$CDO mergetime ${in_file} ${merge_file}
-	in_file=${merge_file}
-fi
-
-$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
-
-
-$nc2csv ${out_file}
-rm -f ${merge_file}
-echo " "
-echo "================================"
-echo " "
-
-# # ----====> u60 <====---- #
+# #=========================================
+# # ----====> EA-tas <====---- #
 # 
-# actor="u60"
+# actor="NINO34"
+# var="tas" 	# Variable name for the actor
 # 
-# var="ua" 		# Variable name for the actor
-# plev="10${punits}"	# pressure in hPa level with unit adjustment
-# lon_min="0"		# Minimum longitude
-# lon_max="0"		# Maximum longitude
-# lat_min="55.0"		# Mininum latitude
-# lat_max="65.0"		# Maximum latitude
+# lon_min="190"	# Minimum longitude
+# lon_max="240"	# Maximum longitude
+# lat_min="-5"	# Mininum latitude
+# lat_max="5"	# Maximum latitude
 # 
 # if "$make_actor_dir" ; then
 # 	actor_dir="${model_dir}/${var}/${real}"
 # fi
-# in_filename="${var}_Z${model_filename}" 	# Note the Z for zonal variables
+# in_filename="${var}_${model_filename}" 	
 # in_file="${actor_dir}/${in_filename}"
 # 
 # out_filename="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
-# out_tempfile="${out_dir}/tempfile.nc"
 # out_file="${out_dir}/${out_filename}"
 # 
 # echo "Create ${actor} timeseries"
@@ -169,25 +123,75 @@ echo " "
 # 	echo "${in_file}"
 # 	exit 1
 # fi
-# 
-# if $merge_time; then
+# if $merge_time  ; then
 # 	echo "MERGETIME TRUE"
 # 	merge_file="${out_dir}/merge_file.nc"
 # 	rm -f "${out_dir}/merge_file.nc"
-# 	echo "Merge files: ${in_file}"
-# 	echo "into merge file ${merge_file}"
 # 	$CDO mergetime ${in_file} ${merge_file}
 # 	in_file=${merge_file}
 # fi
 # 
-# $CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
-# $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
+# $CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+# 
+# 
 # $nc2csv ${out_file}
 # rm -f ${merge_file}
-# rm -f ${out_tempfile}
 # echo " "
 # echo "================================"
 # echo " "
+
+# ----====> u60 <====---- #
+
+actor="u60"
+
+var="ua" 		# Variable name for the actor
+plev="10${punits}"	# pressure in hPa level with unit adjustment
+lon_min="0"		# Minimum longitude
+lon_max="0"		# Maximum longitude
+lat_min="55.0"		# Mininum latitude
+lat_max="65.0"		# Maximum latitude
+
+if "$make_actor_dir" ; then
+	actor_dir="${model_dir}/${var}/${real}"
+fi
+in_filename="${var}_Z${model_filename}" 	# Note the Z for zonal variables
+in_file="${actor_dir}/${in_filename}"
+
+out_filename="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
+out_tempfile="${out_dir}/tempfile.nc"
+out_file="${out_dir}/${out_filename}"
+
+echo "Create ${actor} timeseries"
+echo "Input file: ${in_file}"
+echo "Output file: ${out_file}"
+if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
+	echo "FILE NOT FOUND:"
+	echo "${in_file}"
+	exit 1
+fi
+
+if $merge_time; then
+	echo "MERGETIME TRUE"
+	merge_file="${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
+	echo "Merge files: ${in_file}"
+	echo "into merge file ${merge_file}"
+	$CDO mergetime ${in_file} ${merge_file}
+	in_file=${merge_file}
+fi
+
+
+$CDO -r sellevel,${plev} ${in_file} ${out_tempfile}_sellev.nc 
+ncap2 -h -O -s "weights=cos(lat*3.1415/180)" ${out_tempfile}_sellev.nc ${out_tempfile}_wgt.nc 
+nces -d lat,${lat_min},${lat_max} ${out_tempfile}_wgt.nc ${out_tempfile}_area.nc 
+ncwa -h -O -w weights -a lat,lon ${out_tempfile}_area.nc ${out_file} 
+# $CDO -r fldmean -sellevel,${plev} ${out_tempfile} ${out_file} 
+$nc2csv ${out_file} 
+rm -f ${merge_file}
+rm -f ${out_tempfile}*
+echo " "
+echo "================================"
+echo " "
 # 
 # 
 # # ----====> EA-tas <====---- #

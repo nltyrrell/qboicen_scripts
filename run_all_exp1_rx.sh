@@ -11,7 +11,7 @@ set -e
 # Change to addts_master.sh to add new ts (without recalc all)
 # $cdo_master.sh script is in:
 script_dir="/gws/nopw/j04/gotham/cen_qboi/scripts" 
-cdo_master="addts_master.sh" #"cdo_master.sh"
+cdo_master="cdo_master.sh" #"addts_master.sh" #"cdo_master.sh"
 
 #Global variables
 exp="Exp1"
@@ -124,10 +124,11 @@ group="MIROC"; model="MIROC-AGCM"
 model_dir="/gws/nopw/j04/qboi/${group}/${model}/${model}-LL/QBOi${exp}/${tmean}/atmos"
 model_filename="A${tmean}_MIROC-AGCM-LL_QBOi${exp}_${real}_*"
 actor_dir=""; make_actor_dir=true
-mirocapsl_merge_time=false; merge_time=true
+mirocapsl_merge_time=true; merge_time=true
 lat_size="160"; qbo_plev="10"; punits=""
 $script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --mirocapsl_merge_time=$mirocapsl_merge_time --qbo_plev=$qbo_plev
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
+
 real="r2i1p1"
 group="MIROC"; model="MIROC-AGCM"
 model_dir="/gws/nopw/j04/qboi/${group}/${model}/${model}-LL/QBOi${exp}/${tmean}/atmos"

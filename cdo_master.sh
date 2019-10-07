@@ -103,8 +103,6 @@ actor="u60"
 
 var="ua" 		# Variable name for the actor
 plev="10${punits}"	# pressure in hPa level with unit adjustment
-lon_min="0"		# Minimum longitude
-lon_max="0"		# Maximum longitude
 lat_min="55.0"		# Mininum latitude
 lat_max="65.0"		# Maximum latitude
 
@@ -137,11 +135,15 @@ if $merge_time; then
 	in_file=${merge_file}
 fi
 
-$CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
-$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
+# $CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
+$CDO -r sellevel,${plev} ${in_file} ${out_tempfile}_sellev.nc
+ncap2 -h -O -s "weights=cos(lat*3.1415/180)" ${out_tempfile}_sellev.nc ${out_tempfile}_wgt.nc
+nces -d lat,${lat_min},${lat_max} ${out_tempfile}_wgt.nc ${out_tempfile}_area.nc
+ncwa -h -O -w weights -a lat,lon ${out_tempfile}_area.nc ${out_file}
+# $CDO -r fldmean -sellevel,${plev} ${out_tempfile} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
-rm -f ${out_tempfile}
+rm -f ${out_tempfile}*
 echo " "
 echo "================================"
 echo " "
@@ -152,8 +154,6 @@ actor="QBO"
 
 var="ua" 		# Variable name for the actor
 plev="${qbo_plev}${punits}"	# pressure level with unit adjustment
-lon_min="0"		# Minimum longitude
-lon_max="0"		# Maximum longitude
 lat_min="-5.0"		# Mininum latitude
 lat_max="5.0"		# Maximum latitude
 
@@ -186,11 +186,15 @@ if $merge_time; then
 	in_file=${merge_file}
 fi
 
-$CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
-$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
+$CDO -r sellevel,${plev} ${in_file} ${out_tempfile}_sellev.nc
+echo "|| running following ncap2 command || "
+ncap2 -h -O -s "weights=cos(lat*3.1415/180)" ${out_tempfile}_sellev.nc ${out_tempfile}_wgt.nc
+nces -d lat,${lat_min},${lat_max} ${out_tempfile}_wgt.nc ${out_tempfile}_area.nc
+ncwa -h -O -w weights -a lat,lon ${out_tempfile}_area.nc ${out_file}
+# $cdo -r fldmean -sellevel,${plev} ${out_tempfile} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
-rm -f ${out_tempfile}
+rm -f ${out_tempfile}*
 echo " "
 echo "================================"
 echo " "
@@ -403,18 +407,19 @@ then
 
 	MON=1
 	while [ $MON -le 12 ] ;do
-		cdo -selmon,$MON ${out_tempfile}_nao_nostd_day.nc ${out_tempfile}f1_$MON.nc
-		cdo selmon,$MON ${ineofstd_file} ${out_tempfile}f2_$MON.nc
-		cdo div ${out_tempfile}f1_$MON.nc ${out_tempfile}f2_$MON.nc ${out_tempfile}nao_m$MON.nc
+		$CDO -selmon,$MON ${out_tempfile}_nao_nostd_day.nc ${out_tempfile}f1_$MON.nc
+		$CDO selmon,$MON ${ineofstd_file} ${out_tempfile}f2_$MON.nc
+		$CDO div ${out_tempfile}f1_$MON.nc ${out_tempfile}f2_$MON.nc ${out_tempfile}nao_m$MON.nc
 		let MON=MON+1
 	done
 
-	cdo -O mergetime ${out_tempfile}nao_m*.nc ${out_file}
+	$CDO -O mergetime ${out_tempfile}nao_m*.nc ${out_file}
 
 	rm ${out_tempfile}* # remove some files after having a quick look at t    hem
 
 else 
-	echo "no NAO calculation"
+	echo "NO NAO calculation"
+	exit 1
 fi
 
 
@@ -430,8 +435,6 @@ actor="v_flux"
 
 var="fz" 		# Variable name for the actor
 plev="100${punits}"	# pressure level with unit adjustment
-lon_min="0"		# Minimum longitude
-lon_max="0"		# Maximum longitude
 lat_min="45.0"		# Mininum latitude
 lat_max="75.0"		# Maximum latitude
 
@@ -467,11 +470,14 @@ if  $merge_time  ; then
 	in_file=${merge_file}
 fi
 
-$CDO -b 64 enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
-$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -sellevel,${plev} ${out_tempfile} ${out_file}
+$CDO -r sellevel,${plev} ${in_file} ${out_tempfile}_sellev.nc
+ncap2 -h -O -s "weights=cos(lat*3.1415/180)" ${out_tempfile}_sellev.nc ${out_tempfile}_wgt.nc
+nces -d lat,${lat_min},${lat_max} ${out_tempfile}_wgt.nc ${out_tempfile}_area.nc
+ncwa -h -O -w weights -a lat,lon ${out_tempfile}_area.nc ${out_file}
+# $$CDO -r fldmean -sellevel,${plev} ${out_tempfile} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
-rm -f ${out_tempfile}
+rm -f ${out_tempfile}*
 echo " "
 echo "================================"
 echo " "
@@ -482,10 +488,8 @@ actor="PoV"
 
 var="zg" 	# Variable name for the actor
 plev="100${punits},85${punits},70${punits},60${punits},50${punits},40${punits},30${punits},20${punits},15${punits},10${punits}" # pressure level with unit adjustment
-lon_min="0"	# Minimum longitude
-lon_max="0"	# Maximum longitude
-lat_min="65"	# Mininum latitude
-lat_max="90"	# Maximum latitude
+lat_min="65.0"	# Mininum latitude
+lat_max="90.0"	# Maximum latitude
 
 if "$make_actor_dir" ; then
 	actor_dir="${model_dir}/${var}/${real}"
@@ -514,12 +518,14 @@ if  $merge_time  ; then
 	in_file=${merge_file}
 fi
 
-$CDO enlarge,r1x${lat_size} ${in_file} ${out_tempfile}
-$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${out_tempfile} ${out_file}
-#$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} -vertmean -sellevel,${plev} ${in_file} ${out_file}
+$CDO -r vertmean -sellevel,${plev} ${in_file} ${out_tempfile}_sellev.nc
+ncap2 -h -O -s "weights=cos(lat*3.1415/180)" ${out_tempfile}_sellev.nc ${out_tempfile}_wgt.nc
+nces -d lat,${lat_min},${lat_max} ${out_tempfile}_wgt.nc ${out_tempfile}_area.nc
+ncwa -h -O -w weights -a lat,lon ${out_tempfile}_area.nc ${out_file}
+# $cdo -r fldmean -sellevel,${plev} ${out_tempfile} ${out_file}
 $nc2csv ${out_file}
 rm -f ${merge_file}
-rm -f ${out_tempfile}
+rm -f ${out_tempfile}*
 echo " "
 echo "================================"
 echo " "
@@ -673,6 +679,53 @@ rm -f ${merge_file}
 echo " "
 echo "================================"
 echo " "
+
+
+#=========================================
+# ----====> NINO34 <====---- #
+
+actor="NINO34"
+var="tas" 	# Variable name for the actor
+
+lon_min="190"	# Minimum longitude
+lon_max="240"	# Maximum longitude
+lat_min="-5"	# Mininum latitude
+lat_max="5"	# Maximum latitude
+
+if "$make_actor_dir" ; then
+	actor_dir="${model_dir}/${var}/${real}"
+fi
+in_filename="${var}_${model_filename}" 	
+in_file="${actor_dir}/${in_filename}"
+
+out_filename="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
+out_file="${out_dir}/${out_filename}"
+
+echo "Create ${actor} timeseries"
+echo "Input file: ${in_file}"
+echo "Output file: ${out_file}"
+if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
+	echo "FILE NOT FOUND:"
+	echo "${in_file}"
+	exit 1
+fi
+if $merge_time  ; then
+	echo "MERGETIME TRUE"
+	merge_file="${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
+	$CDO mergetime ${in_file} ${merge_file}
+	in_file=${merge_file}
+fi
+
+$CDO -r fldmean -sellonlatbox,${lon_min},${lon_max},${lat_min},${lat_max} ${in_file} ${out_file}
+
+
+$nc2csv ${out_file}
+rm -f ${merge_file}
+echo " "
+echo "================================"
+echo " "
+
 echo "Finished actors timeseries for ${group}${model} "
 
 

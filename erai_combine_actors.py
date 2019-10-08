@@ -17,7 +17,7 @@ import pandas as pd
 
 # Get ncfile and dir from input
 model = "erai"
-time = sys.argv[1]
+time = "day" # "day" sys.argv[1]
 
 main_dir = "/ibrix/arch/aledata/tyrrell/erai/cen_data/"
 model_fname = f"erai_{time}.csv"

@@ -181,41 +181,6 @@ $script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean 
 
 $script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 
-group="MIROC" 	# Group name
-model="MIROC-AGCM"	# Model name - use empty string "" if no model name
-real="r2i1p1"	# realisation number, r1i1p1, r2i1p1, r3i1p1
-punits=""	# Add "00" if pres levs in Pa, empty string if hPa
-years="197901-200912" # Exp1: 197901-200912 Exp2: 000101-003112
-model_dir="/gws/nopw/j04/qboi/${group}/${model}/${model}-LL/QBOi${exp}/${tmean}/atmos"
-model_filename="${tmean}_MIROC-AGCM-LL_QBOi${exp}_${real}_*"
-actor_dir=""
-make_actor_dir=true
-merge_time=true
-mirocapsl_merge_time=false
-lat_size="160"
-qbo_plev="10" #QBO level in hPa
-
-$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --mirocapsl_merge_time=$mirocapsl_merge_time --qbo_plev=$qbo_plev
-
-$script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
-
-group="MIROC" 	# Group name
-model="MIROC-AGCM"	# Model name - use empty string "" if no model name
-real="r3i1p1"	# realisation number, r1i1p1, r2i1p1, r3i1p1
-punits=""	# Add "00" if pres levs in Pa, empty string if hPa
-years="197901-200912" # Exp1: 197901-200912 Exp2: 000101-003112
-model_dir="/gws/nopw/j04/qboi/${group}/${model}/${model}-LL/QBOi${exp}/${tmean}/atmos"
-model_filename="${tmean}_MIROC-AGCM-LL_QBOi${exp}_${real}_*"
-actor_dir=""
-make_actor_dir=true
-merge_time=true
-mirocapsl_merge_time=false
-lat_size="160"
-qbo_plev="10" #QBO level in hPa
-
-$script_dir/$cdo_master --group=$group --model=$model --exp=$exp --tmean=$tmean --real=$real --punits=$punits --years=$years --model_dir=$model_dir --model_filename=$model_filename --lat_size=$lat_size --actor_dir=$actor_dir --make_actor_dir=$make_actor_dir --merge_time=$merge_time --mirocapsl_merge_time=$mirocapsl_merge_time --qbo_plev=$qbo_plev
-
-$script_dir/combine_actors.py "${group}${model}" "${exp}" "${real}" "${tmean}"
 echo ""
 echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXnextmodelXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 echo ""

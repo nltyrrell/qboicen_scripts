@@ -148,6 +148,57 @@ echo " "
 echo "================================"
 echo " "
 
+# ----====> QBO50 <====---- #
+
+actor="QBO50"
+
+var="ua" 		# Variable name for the actor
+plev="50${punits}"	# pressure level in hPa with unit adjustment
+lat_min="-5.0"		# Mininum latitude
+lat_max="5.0"		# Maximum latitude
+
+if "$make_actor_dir" ; then
+	actor_dir="${model_dir}/${var}/${real}"
+fi
+in_filename="${var}_Z${model_filename}" 	# Note the Z for zonal variables
+in_file="${actor_dir}/${in_filename}"
+
+out_filename="${actor}_${group}${model}_QBOi${exp}_${real}_${tmean}.nc"
+out_tempfile="${out_dir}/tempfile.nc"
+out_file="${out_dir}/${out_filename}"
+
+echo "Create ${actor} timeseries"
+echo "Input file: ${in_file}"
+echo "Output file: ${out_file}"
+if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
+	echo "FILE NOT FOUND:"
+	echo "${in_file}"
+	exit 1
+fi
+
+if $merge_time; then
+	echo "MERGETIME TRUE"
+	merge_file="${out_dir}/merge_file.nc"
+	rm -f "${out_dir}/merge_file.nc"
+	echo "Merge files: ${in_file}"
+	echo "into merge file ${merge_file}"
+	$CDO mergetime ${in_file} ${merge_file}
+	in_file=${merge_file}
+fi
+
+$CDO -r sellevel,${plev} ${in_file} ${out_tempfile}_sellev.nc
+echo "|| running following ncap2 command || "
+ncap2 -h -O -s "weights=cos(lat*3.1415/180)" ${out_tempfile}_sellev.nc ${out_tempfile}_wgt.nc
+nces -d lat,${lat_min},${lat_max} ${out_tempfile}_wgt.nc ${out_tempfile}_area.nc
+ncwa -h -O -w weights -a lat,lon ${out_tempfile}_area.nc ${out_file}
+# $cdo -r fldmean -sellevel,${plev} ${out_tempfile} ${out_file}
+$nc2csv ${out_file}
+rm -f ${merge_file}
+rm -f ${out_tempfile}*
+echo " "
+echo "================================"
+echo " "
+
 # ----====> QBO <====---- #
 
 actor="QBO"

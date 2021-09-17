@@ -1,4 +1,4 @@
-#!/lustre/tmp/tyrrell/miniconda3/bin/python
+#!/appl/soft/geo/conda/singularity/geoconda/2021/bin/python
 """
 Convert netcdf timeseries to a single file so they can be
 read easily by pandas, and stored easily
@@ -19,7 +19,8 @@ import pandas as pd
 model = "erai"
 time = "day" # "day" sys.argv[1]
 
-main_dir = "/ibrix/arch/aledata/tyrrell/erai/cen_data/"
+# main_dir = "/ibrix/arch/aledata/tyrrell/erai/cen_data/"
+main_dir = "/fmi/scratch/project_2002421/era/erai/cen_data/"
 model_fname = f"erai_{time}.csv"
 
 print("\n")
@@ -36,6 +37,8 @@ PoV_infile = "{0}/{1}_{2}".format(main_dir,"PoV",model_fname)
 PoV = pd.read_csv(PoV_infile,header=None, names=["date","PoV"])
 QBO_infile = "{0}/{1}_{2}".format(main_dir,"QBO",model_fname)
 QBO = pd.read_csv(QBO_infile,header=None, names=["date","QBO"])
+QBO50_infile = "{0}/{1}_{2}".format(main_dir,"QBO50",model_fname)
+QBO50 = pd.read_csv(QBO50_infile,header=None, names=["date","QBO50"])
 u60_infile = "{0}/{1}_{2}".format(main_dir,"u60",model_fname)
 u60 = pd.read_csv(u60_infile,header=None, names=["date","u60"])
 NINO34_infile = "{0}/{1}_{2}".format(main_dir,"NINO34",model_fname)
@@ -54,6 +57,7 @@ allactors_df = pd.concat([NAO["date"],
                  EAtas["EA-tas"],
                  PoV["PoV"],
                  QBO["QBO"],
+                 QBO50["QBO50"],
                  NINO34["NINO34"],
                  u60["u60"],
                  SibSLP["Sib-SLP"],

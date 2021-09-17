@@ -9,12 +9,11 @@ set -e
 # nicholas tyrrell 2019
 # 
 # Use nc2csv.py to convert nc files to csv files
-nc2csv=/home/users/tyrrell/qboi/qboicen_scripts/nc2csv.py3
+nc2csv=/users/tyrrelln/scripts/qboicen_scripts/nc2csv.py3
 
-/home/tyrrell/research/qbo/qboi/qboicen_scripts
 # Use own version of cdo, v 1.9.6
 # CDO=/lustre/tmp/tyrrell/miniconda3/bin/cdo
-CDO=/appl/soft/geo/conda/singularity/geoconda/2021/bin/cdo
+CDO=/users/tyrrelln/miniconda3/bin/cdo
 
 #============ Read in arguments from command line ===============
 
@@ -269,13 +268,13 @@ then
 
 	MON=1
 	while [ $MON -le 12 ] ;do
-		cdo -selmon,$MON ${out_tempfile}_nao_nostd_day.nc ${out_tempfile}f1_$MON.nc
-		cdo selmon,$MON ${ineofstd_file} ${out_tempfile}f2_$MON.nc
-		cdo div ${out_tempfile}f1_$MON.nc ${out_tempfile}f2_$MON.nc ${out_tempfile}nao_m$MON.nc
+		$CDO -selmon,$MON ${out_tempfile}_nao_nostd_day.nc ${out_tempfile}f1_$MON.nc
+		$CDO selmon,$MON ${ineofstd_file} ${out_tempfile}f2_$MON.nc
+		$CDO div ${out_tempfile}f1_$MON.nc ${out_tempfile}f2_$MON.nc ${out_tempfile}nao_m$MON.nc
 		let MON=MON+1
 	done
 
-	cdo -O mergetime ${out_tempfile}nao_m*.nc ${out_file}
+	$CDO -O mergetime ${out_tempfile}nao_m*.nc ${out_file}
 
 	rm ${out_tempfile}* # remove some files after having a quick look at t    hem
 

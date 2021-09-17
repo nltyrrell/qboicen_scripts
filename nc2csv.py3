@@ -1,4 +1,4 @@
-#!/lustre/tmp/tyrrell/miniconda3/bin/python
+#!/appl/soft/geo/conda/singularity/geoconda/2021/bin/python
 
 """
 Convert netcdf timeseries to csv files so they can be 

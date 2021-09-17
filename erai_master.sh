@@ -10,8 +10,11 @@ set -e
 # 
 # Use nc2csv.py to convert nc files to csv files
 nc2csv=/home/users/tyrrell/qboi/qboicen_scripts/nc2csv.py3
+
+/home/tyrrell/research/qbo/qboi/qboicen_scripts
 # Use own version of cdo, v 1.9.6
-CDO=/lustre/tmp/tyrrell/miniconda3/bin/cdo
+# CDO=/lustre/tmp/tyrrell/miniconda3/bin/cdo
+CDO=/appl/soft/geo/conda/singularity/geoconda/2021/bin/cdo
 
 #============ Read in arguments from command line ===============
 
@@ -22,13 +25,13 @@ lat_size="181"
 qbo_plev="30"
 model_dir=""
 model_filename=""
-out_dir="/ibrix/arch/aledata/tyrrell/erai/cen_data/"
+out_dir="/fmi/scratch/project_2002421/era/erai/cen_data/"
 
 # Define variable paths and names
-era_dir="/ibrix/arch/aledata/tyrrell/erai/cen_data"
+era_dir="/fmi/scratch/project_2002421/era/erai/cen_data/"
 
 if [ ${tmean} == "day" ]; then
-     t2m_in_file="/stornext/field/users/karpech/erai/t2m/erai_t2m_1979_2017_daily.nc"
+     t2m_in_file="${era_dir}/erai_t2m_1979-2014_NH_${tmean}.nc"
 fi
 if [ ${tmean} == "mon" ]; then
      t2m_in_file="${era_dir}/erai_t2m_1979-2014_${tmean}.nc"
@@ -60,6 +63,42 @@ actor="QBO"
 
 var="u" 		# Variable name for the actor
 plev="${qbo_plev}${punits}"	# pressure level with unit adjustment
+lat_min="-5.0"		# Mininum latitude
+lat_max="5.0"		# Maximum latitude
+
+in_file="${uz_in_file}"
+
+out_filename="${actor}_${model}_${tmean}.nc"
+out_file="${out_dir}/${out_filename}"
+
+echo "Create ${actor} timeseries"
+echo "Input file: ${in_file}"
+echo "Output file: ${out_file}"
+if [ `ls -1 ${in_file} 2>/dev/null | wc -l ` -lt 1 ]; then
+	echo "FILE NOT FOUND:"
+	echo "${in_file}"
+	exit 1
+fi
+
+
+$CDO -r sellevel,${plev} ${in_file} ${out_tempfile}_sellev.nc
+ncap2 -h -O -s "weights=cos(lat*3.1415/180)" ${out_tempfile}_sellev.nc ${out_tempfile}_wgt.nc
+nces -d lat,${lat_min},${lat_max} ${out_tempfile}_wgt.nc ${out_tempfile}_area.nc
+ncwa -h -O -w weights -a lat,lon ${out_tempfile}_area.nc ${out_file}
+# $CDO -r fldmean -sellevel,${plev} ${out_tempfile} ${out_file}
+$nc2csv ${out_file}
+rm -f ${merge_file}
+rm -f ${out_tempfile}*
+echo " "
+echo "================================"
+echo " "
+
+# ----====> QBO50 <====---- #
+
+actor="QBO50"
+
+var="u" 		# Variable name for the actor
+plev="50${punits}"	# pressure level with unit adjustment
 lat_min="-5.0"		# Mininum latitude
 lat_max="5.0"		# Maximum latitude
 
